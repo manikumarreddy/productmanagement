@@ -38,17 +38,18 @@
 		    } );
 			
 		    $('#removeRow').click( function () {
-		    	var selectedRow=dTable.row('.selected');
-		    	if(selectedRow.$('td').eq(0).text()!=""){
+		    	var selectedRow=$('tr.selected td');alert(selectedRow.eq(0).text());
+		    	if(selectedRow.eq(0).text()!=""){
 		    		$.ajax({
 			    		  url: "../productManagement/delete",
 			    		  method: "POST",
-			    		  data: {productId:selectedRow.$('td').eq(0).text()}		    		  
+			    		  data: {productId:selectedRow.eq(0).text()}		    		  
 			    		})
 		    		  .done(function( data ) {
-		    			  messageHandling("success","Product removed from Product Inventory List");
+		    			  
 		    		  });
-			    	selectedRow.remove().draw( false );
+			    	selectedRow.remove();
+			    	messageHandling("success","Product removed from Product Inventory List");
 		    	}else{
 		    		messageHandling("error","Please select Product from product Inventory list to delete");
 		    	}
@@ -232,25 +233,26 @@
    		<div class="col-sm-2"><button type="button" class="btn btn-primary" data-toggle="modal"  id="addRow">Add Product</button></div>   
 		<div class="col-sm-2"><button type="button" class="btn btn-primary" data-toggle="modal" id="removeRow">Remove Product</button></div>
 		<div class="col-sm-2"><button type="button" class="btn btn-primary" data-toggle="modal" id="updateRow">Update Product</button></div>
-		<div class="col-sm-6" id="alertArea">
+		<div class="col-sm-2"></div>
+		<div class="col-sm-4" id="alertArea">
 		  <div class="alert alert-success alert-dismissible hide">
 		    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		    <strong>Success!</strong><span class="msg"></span> 
+		    <strong>Success!</strong>&nbsp;<span class="msg"></span> 
 		  </div>
 		  <div class="alert alert-warning alert-dismissible hide">
 		    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		    <strong>Warning!</strong><span class="msg"></span> 
+		    <strong>Warning!</strong>&nbsp;<span class="msg"></span> 
 		  </div>
 		  <div class="alert alert-danger alert-dismissible hide">
 		    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-		    <strong>Error!</strong><span class="msg"></span> 
+		    <strong>Error!</strong>&nbsp;<span class="msg"></span> 
 		  </div>
 		</div>
 	</div>
 	<table id="productDataTable" class="table table-striped table-bordered" style="width:100%">
 			<thead>
 				<tr>
-					<th class="info">ProductId</th>
+					<th class="info">Product Id</th>
 					<th class="info">Product Name</th>
 					<th class="info">Product Description</th>
 					<th class="info">Related Product</th>

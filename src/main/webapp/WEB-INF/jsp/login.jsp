@@ -125,7 +125,7 @@
 						  </div>
 						  <div class="form-group">
 						    <label for="password">Password (<span class="mandatory">*</span>)</label>
-						    <input type="text"   class="form-control" id="password" name="password" placeholder="Password" required></input>
+						    <input type="password"   class="form-control" id="password" name="password" placeholder="Password" required></input>
 						  </div>	  
 						  <input type="submit" value="Submit" class="btn btn-primary" id="submitLogin"/>
 						  <div style="color: red;display:none;" id="errorMessage">${error}</div>						  
