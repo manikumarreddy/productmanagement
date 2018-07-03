@@ -3,6 +3,7 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, user-scalable=no">
+	<title>Product Management</title>
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
@@ -49,15 +50,16 @@
 		    			  
 		    		  });
 			    	selectedRow.remove();
-			    	messageHandling("success","Product removed from Product Inventory List");
+			    	messageHandling("success","Product removed from Product Inventory List",false);
 		    	}else{
-		    		messageHandling("error","Please select Product from product Inventory list to delete");
+		    		messageHandling("error","Please select Product from product Inventory list to delete",false);
 		    	}
 		    	
 		    } );
 			
 			$('#addRow').click(function(){
 				$("#productModel").modal();
+				$("#formAlertArea").html("");
 				$('form > input[type=reset]').trigger('click')
 				$("#productModel form").attr("action","../productManagement/create");
 				var numbers=dTable.$("td:eq(0)").text();
@@ -73,9 +75,10 @@
 			$("#updateRow").click(function(){				
 				var selectedCols=$('tr.selected td');
 				if(selectedCols.length==0){					
-			    	messageHandling("error","Please select Product from product Inventory list to update");
+			    	messageHandling("error","Please select Product from product Inventory list to update",false);
 				}else{
 					$("#productModel").modal();
+					$("#formAlertArea").html("");
 					$('form > input[type=reset]').trigger('click')
 					$("#productId").val(selectedCols.eq(0).text());
 					$("#productName").val(selectedCols.eq(1).text());
@@ -87,50 +90,81 @@
 			});
 			
 			$(".submitChanges").click(function(){
-				var action =$("#productModel form").attr('action');				
-				$.ajax({
-		    		  url: action,
-		    		  method: "POST",
-		    		  data: {productId:$("#productId").val(),
-		    			  productName:$("#productName").val(),
-		    			  description:$("#productDescription").val(),
-		    			  relatedProducts:$("#relatedProducts").val(),
-		    			  img:$("#productImage").val()
-		    			  }
-		    		})
-	    		  .done(function(data) {	    		   
-	    		    $("#closeModal").trigger("click");
-	    		    if(action.indexOf("create")!=-1){
-	    		    	 dTable.row.add(data).draw(false);
-	    		    	 messageHandling("success","Product added to Product Inventory List");
-	 	    		 
-					}else{
-						var selectedCols=$('tr.selected td');
-						//selectedRow.data(data).draw();
-						selectedCols.eq(0).html(data.productId);
-						selectedCols.eq(1).html(data.productName);
-						selectedCols.eq(2).html(data.description);
-						selectedCols.eq(3).html(data.relatedProducts);
-						selectedCols.eq(4).html(data.img);
-						messageHandling("success","Product "+data.productName+" updated in Product Inventory List");
-					}
-	    		 });
+				var action =$("#productModel form").attr('action');		
+				if(validateForm()){
+					$.ajax({
+			    		  url: action,
+			    		  method: "POST",
+			    		  data: {productId:$("#productId").val(),
+			    			  productName:$("#productName").val(),
+			    			  description:$("#productDescription").val(),
+			    			  relatedProducts:$("#relatedProducts").val(),
+			    			  img:$("#productImage").val()
+			    			  }
+			    		})
+		    		  .done(function(data) {	    		   
+		    		    $("#closeModal").trigger("click");
+		    		    if(action.indexOf("create")!=-1){
+		    		    	 dTable.row.add(data).draw(false);
+		    		    	 messageHandling("success","Product added to Product Inventory List",false);
+		 	    		 
+						}else{
+							var selectedCols=$('tr.selected td');
+							//selectedRow.data(data).draw();
+							selectedCols.eq(0).html(data.productId);
+							selectedCols.eq(1).html(data.productName);
+							selectedCols.eq(2).html(data.description);
+							selectedCols.eq(3).html(data.relatedProducts);
+							selectedCols.eq(4).html(data.img);
+							messageHandling("success","Product "+data.productName+" updated in Product Inventory List",false);
+						}
+		    		 });
+				}
 			})
 			
-			var messageHandling=function(type,message){
+			var messageHandling=function(type,message,zindex){
+				var cloned;
 				if(type=="error"){
-					var cloned=$(".alert-danger").eq(0).clone().appendTo("#alertArea").removeClass("hide");
-					cloned.children("span.msg").text(message);
-					
+					if(!zindex){
+						cloned=$(".alert-danger").eq(0).clone().appendTo("#alertArea").removeClass("hide")	
+					}else{
+						cloned=$(".alert-danger").eq(0).clone().appendTo("#formAlertArea").removeClass("hide");
+					}									
 				}else if(type=="success"){
-					var cloned=$(".alert-success").eq(0).clone().appendTo("#alertArea").removeClass("hide");
-					cloned.children("span.msg").text(message);
+					if(!zindex){
+						cloned=$(".alert-success").eq(0).clone().appendTo("#alertArea").removeClass("hide")	
+					}else{
+						cloned=$(".alert-success").eq(0).clone().appendTo("#formAlertArea").removeClass("hide");
+					}	
 				}else{
-					var cloned=$(".alert-warning").eq(0).clone().appendTo("#alertArea").removeClass("hide");
-					cloned.children("span.msg").text(message);
+					if(!zindex){
+						cloned=$(".alert-warning").eq(0).clone().appendTo("#alertArea").removeClass("hide")	
+					}else{
+						cloned=$(".alert-warning").eq(0).clone().appendTo("#formAlertArea").removeClass("hide");
+					}
 				}
+				if(zindex){
+					cloned.css("z-index","9999");
+				}
+				cloned.children("span.msg").text(message);
+				return;
 			}
 			
+			var validateForm=function(){
+				$("#formAlertArea").html("");
+				var productName=$("#productName").val();
+				var productDesc=$("#productDescription").val();
+				var status=true;
+				if(productName==""){
+					messageHandling("error","Please provide Product Name",true);
+					status=false;
+				}
+				if(productDesc==""){
+					messageHandling("error","Please provide Product Description",true);
+					status=false;
+				}
+				return status;
+			}
 						
 		});
 		
@@ -178,8 +212,8 @@
 	    .hide{
 	    	display:none;
 	    }
-	    #alertArea{
-	    	z-index: 99999;
+	    #alertArea,#formAlertArea{
+	    	z-index: 888;
 		    position: absolute;
 		    float: right;
 		    overflow: overlay;
@@ -273,9 +307,10 @@
 	      </div>
 	      <div class="modal-body">
 	        <form action="/productManagement/create" method="POST">
+	          <div class="col-sm-6" style="float:right" id="formAlertArea"></div>	         
 			  <div class="form-group">
 			    <label for="productName">Product Name (<span class="mandatory">*</span>)</label>
-			    <input type="text" class="form-control" id="productName"  placeholder="Name of product" required>
+			    <input type="text" class="form-control" id="productName"  placeholder="Name of product"  pattern="[A-Za-z]" required>
 			  </div>
 			  <div class="form-group">
 			    <label for="productDescription">Product description (<span class="mandatory">*</span>)</label>
