@@ -38,7 +38,7 @@
 		    } );
 			
 		    $('#removeRow').click( function () {
-		    	var selectedRow=$('tr.selected td');alert(selectedRow.eq(0).text());
+		    	var selectedRow=$('tr.selected td');
 		    	if(selectedRow.eq(0).text()!=""){
 		    		$.ajax({
 			    		  url: "../productManagement/delete",
